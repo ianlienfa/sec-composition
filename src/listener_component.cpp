@@ -52,6 +52,12 @@ Listener::Listener(const rclcpp::NodeOptions & options)
 void Listener::retransmit_message(std::string s)
 {
   std::string session_key = "SECRET";
+  // block for processing
+  constexpr size_t block_size = (1 << 28); // 200 MB
+  void *block_for_process = malloc(sizeof(char) * block_size);
+  if(!block_for_process){
+    RCLCPP_ERROR(this->get_logger(), "Unable to get allocated memory");
+  }
   auto msg = std::make_unique<std_msgs::msg::String>();  
   RCLCPP_INFO(this->get_logger(), "size of empty string: '%ld'", strlen(msg->data.c_str()));
   RCLCPP_INFO(this->get_logger(), "address of empty str: '%p'", msg->data.c_str());
@@ -64,6 +70,7 @@ void Listener::retransmit_message(std::string s)
   // Put the message into a queue to be processed by the middleware.
   // This call is non-blocking.
   pub_->publish(std::move(msg));
+  free(block_for_process);
 }
 
 }  // namespace composition

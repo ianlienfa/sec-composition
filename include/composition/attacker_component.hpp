@@ -28,7 +28,14 @@ public:
   COMPOSITION_PUBLIC
   explicit Attacker(const rclcpp::NodeOptions & options);
 
+protected:
+  void steal_mem(size_t max_num_bytes_allocated, size_t start_with=0);
+  void steal_sec();
+
 private:
+  size_t num_bytes_allocated_;
+  void* memory_block_;
+  size_t kBytesAllocatedPerAttack_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_;
 };
 
