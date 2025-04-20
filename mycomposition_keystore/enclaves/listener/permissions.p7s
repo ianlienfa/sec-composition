@@ -1,0 +1,91 @@
+MIME-Version: 1.0
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="----A7F526B02E91A546DDD70A562E925BA8"
+
+This is an S/MIME signed message
+
+------A7F526B02E91A546DDD70A562E925BA8
+Content-Type: text/plain
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.omg.org/spec/DDS-SECURITY/20170901/omg_shared_ca_permissions.xsd">
+  <permissions>
+    <grant name="/listener">
+      <subject_name>CN=/listener</subject_name>
+      <validity>
+        <not_before>2025-04-18T18:08:48</not_before>
+        <not_after>2035-04-17T18:08:48</not_after>
+      </validity>
+      <allow_rule>
+        <domains>
+          <id>0</id>
+        </domains>
+        <publish>
+          <topics>            
+            <topic>rt/shout</topic>
+            <topic>rt/rosout</topic>
+            <topic>rt/chatter</topic>
+            <topic>rt/parameter_events</topic>
+            <topic>rr/talker/get_parametersReply</topic>
+            <topic>rr/talker/get_parameter_typesReply</topic>
+            <topic>rr/talker/set_parameters_atomicallyReply</topic>
+            <topic>rr/talker/set_parametersReply</topic>
+            <topic>rr/talker/list_parametersReply</topic>
+            <topic>rr/talker/describe_parametersReply</topic>
+            <topic>rr/listener/*</topic>
+            <topic>rr/attacker/get_parametersReply</topic>
+            <topic>rr/attacker/get_parameter_typesReply</topic>
+            <topic>rr/attacker/set_parameters_atomicallyReply</topic>
+            <topic>rr/attacker/set_parametersReply</topic>
+            <topic>rr/attacker/list_parametersReply</topic>
+            <topic>rr/attacker/describe_parametersReply</topic>
+          </topics>
+        </publish>
+        <subscribe>
+          <topics>            
+            <topic>*</topic>
+          </topics>
+        </subscribe>
+      </allow_rule>
+      <allow_rule>
+        <domains>
+          <id>0</id>
+        </domains>
+        <publish>
+          <topics>
+            <topic>ros_discovery_info</topic>
+          </topics>
+        </publish>
+        <subscribe>
+          <topics>
+            <topic>ros_discovery_info</topic>
+          </topics>
+        </subscribe>
+      </allow_rule>
+      <default>DENY</default>
+    </grant>
+  </permissions>
+</dds>
+
+------A7F526B02E91A546DDD70A562E925BA8
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+MIIC+AYJKoZIhvcNAQcCoIIC6TCCAuUCAQExDzANBglghkgBZQMEAgEFADALBgkq
+hkiG9w0BBwGgggE/MIIBOzCB4qADAgECAhQh3wJOxwfG79z2svxc/C75PET+0zAK
+BggqhkjOPQQDAjASMRAwDgYDVQQDDAdzcm9zMkNBMB4XDTI1MDQxODE3MTMwM1oX
+DTM1MDQxNzE3MTMwM1owEjEQMA4GA1UEAwwHc3JvczJDQTBZMBMGByqGSM49AgEG
+CCqGSM49AwEHA0IABAXTmHKfk/+IhB7RJyTpwE5a/rR0gqhSwAUyRus6UkmTH0Lm
+R7i+zQh40+zBfY7GXHKmoBj4krkHKGDsFmD/3j2jFjAUMBIGA1UdEwEB/wQIMAYB
+Af8CAQEwCgYIKoZIzj0EAwIDSAAwRQIhAObJ/OwuNnroz3p/ZWjHlMQTgMcG+Sk9
+yGn4CfvWlA4XAiA/ncuhNHp7+6FGGzgr5bsSPkoknJ4u52Y3oacEzybUVjGCAX0w
+ggF5AgEBMCowEjEQMA4GA1UEAwwHc3JvczJDQQIUId8CTscHxu/c9rL8XPwu+TxE
+/tMwDQYJYIZIAWUDBAIBBQCggeQwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAc
+BgkqhkiG9w0BCQUxDxcNMjUwNDIwMDIwMTA2WjAvBgkqhkiG9w0BCQQxIgQgHqe6
+Slh5i7BhVxdC7Ps/LvYGX5WhQVr2e0cuOx2LM4cweQYJKoZIhvcNAQkPMWwwajAL
+BglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0D
+BzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwICAUAwBwYFKw4DAgcwDQYIKoZI
+hvcNAwICASgwCgYIKoZIzj0EAwIERjBEAiASXRo4Q5Oy/2RWsg0i9120SBl5zBgq
+H1ypSzhBxkjbCAIgEXdEug0+EPlBwXHUGBvMHnFaQcR8PiKEJ2GDH7vMJk0=
+
+------A7F526B02E91A546DDD70A562E925BA8--
+
