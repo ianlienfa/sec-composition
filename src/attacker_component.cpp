@@ -1,8 +1,5 @@
 #include "composition/attacker_component.hpp"
 
-#include <iostream>
-#include <memory>
-#include <chrono>   // For std::chrono::seconds
 
 
 #include "rclcpp/rclcpp.hpp"
@@ -19,19 +16,29 @@ Attacker::Attacker(const rclcpp::NodeOptions & options)
 : Node("attacker", options), num_bytes_allocated_(0), kBytesAllocatedPerAttack_(1 << 14) // 16 MB per attack
 {
   // Create a callback function for when messages are received.
-  // Variations of this function also exist using, for example, UniquePtr for zero-copy transport.
-  auto callback =
+  // Variations of this function also exist using, for example, UniquePtr for zero-copy transport.  
+
+  auto topic_list = this->get_topic_names_and_types();
+  for (const auto & topic : topic_list) {    
+    topic_name.resize(topic.first.size()-1);    
+    copy(topic.first.begin()+1, topic.first.end(), topic_name.begin()); // slicing for topic name    
+    RCLCPP_INFO(this->get_logger(), "Discovered topic: %s", topic_name.c_str()); 
+
+    // define callback
+    auto callback =
     [this](std_msgs::msg::String::ConstSharedPtr msg) -> void
     {
-        (void) msg;
-        steal_mem((1 << 31), (1 << 20)); // start with 16MB
+      RCLCPP_ERROR(this->get_logger(), "Attcker heard from topic[%s]: '%s'",topic_name.c_str(), msg->data.c_str());
     };
 
-  // Create a subscription to the "chatter" topic which can be matched with one or more
-  // compatible ROS publishers.
-  // Note that not all publishers on the same topic with the same type will be compatible:
-  // they must have compatible Quality of Service policies.
-  sub_ = create_subscription<std_msgs::msg::String>("chatter", 10, callback);
+    try {
+      sub_arr.push_back(create_subscription<std_msgs::msg::String>(topic_name.c_str(), 10, callback));
+    }
+    catch (...) {
+      RCLCPP_INFO(this->get_logger(), "Unable to subscribe to topic[%s]",topic_name.c_str());
+    }
+
+  }
 }
 
 void Attacker::steal_mem(size_t max_num_bytes_allocated, size_t start_with){

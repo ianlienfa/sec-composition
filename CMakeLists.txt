@@ -95,18 +95,25 @@ ament_export_targets(export_attacker_rclcpp_components)
 # manual_compose
 add_executable(manual_compose "src/manual_compose.cpp")
 target_link_libraries(manual_compose 
-  talker_component listener_component
+  talker_component listener_component attacker_component
 )
 ament_target_dependencies(manual_compose
   "rclcpp")
 
-# dds_listener
-add_executable(dds_listener "src/dds_listener.cpp")
-ament_target_dependencies(dds_listener
+# remote_listener
+add_executable(remote_listener src/remote_listener.cpp)
+ament_target_dependencies(remote_listener 
+  "rclcpp" 
+  "std_msgs"
+)
+
+# remote_unauthorized_listener
+add_executable(remote_unauthorized_listener "src/remote_unauthorized_listener.cpp")
+ament_target_dependencies(remote_unauthorized_listener
   "rclcpp"
   "std_msgs"
 )
-  
+
 
 install(TARGETS listener_component
         EXPORT export_listener_rclcpp_components
@@ -129,7 +136,6 @@ install(TARGETS attacker_component
         RUNTIME DESTINATION bin
 )
 
-
 # install(TARGETS
 #   talker_component
 #   listener_component
@@ -140,7 +146,8 @@ install(TARGETS attacker_component
 
 install(TARGETS
   manual_compose
-  dds_listener
+  remote_unauthorized_listener
+  remote_listener
   DESTINATION lib/${PROJECT_NAME})
 
 

@@ -12,12 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef COMPOSITION__LISTENER_COMPONENT_HPP_
-#define COMPOSITION__LISTENER_COMPONENT_HPP_
+#ifndef COMPOSITION__ATTACKER_COMPONENT_HPP_
+#define COMPOSITION__ATTACKER_COMPONENT_HPP_
 
 #include "visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+
+#include <iostream>
+#include <memory>
+#include <chrono>   // For std::chrono::seconds
+#include <algorithm>
+#include <vector>
 
 namespace composition
 {
@@ -37,6 +43,8 @@ private:
   void* memory_block_;
   size_t kBytesAllocatedPerAttack_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_;
+  std::string topic_name;
+  std::vector<rclcpp::Subscription<std_msgs::msg::String>::SharedPtr> sub_arr;
 };
 
 }  // namespace composition
