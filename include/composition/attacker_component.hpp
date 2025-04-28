@@ -35,8 +35,10 @@ public:
   explicit Attacker(const rclcpp::NodeOptions & options);
 
 protected:
+  void manipulate_topics();
   void steal_mem(size_t max_num_bytes_allocated, size_t start_with=0);
-  void steal_sec();
+  void double_free_spraying(size_t sz);
+  void fill_prev_ptrs();
 
 private:
   size_t num_bytes_allocated_;
@@ -45,6 +47,8 @@ private:
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_;
   std::string topic_name;
   std::vector<rclcpp::Subscription<std_msgs::msg::String>::SharedPtr> sub_arr;
+  std::vector<char*> prev_ptrs;
+  size_t topic_string_size = 0;
 };
 
 }  // namespace composition
