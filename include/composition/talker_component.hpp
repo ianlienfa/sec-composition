@@ -33,7 +33,7 @@ protected:
 
 private:
   size_t count_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_;
+  rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 };
 

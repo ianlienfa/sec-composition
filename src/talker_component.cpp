@@ -34,7 +34,7 @@ Talker::Talker(const rclcpp::NodeOptions & options)
 : Node("talker", options), count_(0)
 {
   // Create a publisher of "std_mgs/String" messages on the "chatter" topic.
-  pub_ = create_publisher<std_msgs::msg::String>("chatter", 10);
+  pub_ = create_publisher<std_msgs::msg::Int32>("chatter", 10);
 
   // Use a timer to schedule periodic message publishing.
   timer_ = create_wall_timer(1s, [this]() {return this->on_timer();});
@@ -42,9 +42,11 @@ Talker::Talker(const rclcpp::NodeOptions & options)
 
 void Talker::on_timer()
 {
-  auto msg = std::make_unique<std_msgs::msg::String>();
-  msg->data = "Hello World: " + std::to_string(++count_);
-  RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", msg->data.c_str());
+  auto msg = std::make_unique<std_msgs::msg::Int32>();
+  // msg->data = "Hello World: " + std::to_string(++count_);
+  // RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", msg->data.c_str());
+  msg->data = static_cast<long int>(std::time(nullptr));
+  RCLCPP_INFO(this->get_logger(), "Publishing: '%d'", msg->data);
   std::flush(std::cout);
 
   // Put the message into a queue to be processed by the middleware.
