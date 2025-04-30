@@ -1,0 +1,18 @@
+(module
+  (type (;0;) (func))
+  (type (;1;) (func (param i32)))
+  (type (;2;) (func (result i32)))
+  (func (;0;) (type 0))
+  (func (;1;) (type 1) (param i32)
+    local.get 0
+    global.set 0)
+  (func (;2;) (type 2) (result i32)
+    global.get 0)
+  (table (;0;) 1 1 funcref)
+  (memory (;0;) 258 258)
+  (global (;0;) (mut i32) (i32.const 66560))
+  (export "memory" (memory 0))
+  (export "subscriber_callback" (func 0))
+  (export "__indirect_function_table" (table 0))
+  (export "_emscripten_stack_restore" (func 1))
+  (export "emscripten_stack_get_current" (func 2)))

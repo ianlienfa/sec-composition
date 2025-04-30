@@ -18,6 +18,8 @@
 #include "visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/int32.hpp"
+
 
 namespace composition
 {
@@ -29,7 +31,7 @@ public:
   explicit Attacker(const rclcpp::NodeOptions & options);
 
 private:
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_;
+  rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr sub_;
 };
 
 }  // namespace composition

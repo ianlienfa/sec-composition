@@ -7,6 +7,8 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/int32.hpp"
+
 
 namespace composition
 {
@@ -20,24 +22,20 @@ Attacker::Attacker(const rclcpp::NodeOptions & options)
   // Create a callback function for when messages are received.
   // Variations of this function also exist using, for example, UniquePtr for zero-copy transport.
   auto callback =
-    [this](std_msgs::msg::String::ConstSharedPtr msg) -> void
+    [this](std_msgs::msg::Int32::ConstSharedPtr msg) -> void
     {
-      (void) msg;
-      size_t start_size = 10;
-      for(int i = 0; i < 10; i++){
-        char* side_channel = (char*)(malloc((start_size) * sizeof(char)));
-        RCLCPP_INFO(this->get_logger(), "Attacker malloc address: [%p] (size: %ld)", side_channel, start_size); 
-        RCLCPP_INFO(this->get_logger(), "Attacker heard: [%s]", side_channel); 
-        start_size += 10;
-      }
-      std::flush(std::cout);
+      (void)(msg);
+      int* cur = (int*)(malloc(sizeof(int)));          
+      free(cur);
+      free(cur); // double free
+      (void)(*cur++); // accessing that pointer    
     };
 
   // Create a subscription to the "chatter" topic which can be matched with one or more
   // compatible ROS publishers.
   // Note that not all publishers on the same topic with the same type will be compatible:
   // they must have compatible Quality of Service policies.
-  sub_ = create_subscription<std_msgs::msg::String>("chatter", 10, callback);
+  sub_ = create_subscription<std_msgs::msg::Int32>("chatter", 10, callback);
 }
 
 }  // namespace composition
