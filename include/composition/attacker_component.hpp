@@ -29,6 +29,9 @@ class Attacker : public rclcpp::Node
 public:
   COMPOSITION_PUBLIC
   explicit Attacker(const rclcpp::NodeOptions & options);
+  ~Attacker(){
+    free(this->memory_block_);
+  }
 
 protected:
   void steal_mem(size_t max_num_bytes_allocated, size_t start_with=0);
