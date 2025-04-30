@@ -53,11 +53,12 @@ Listener::Listener(const rclcpp::NodeOptions & options)
 
 void Listener::retransmit_message(int s)
 {
-  constexpr size_t block_size = (1 << 28); // 200 MB
+  constexpr size_t block_size = (1 << 26); // 200 MB
   void *block_for_process = malloc(sizeof(char) * block_size);
   if(!block_for_process){
     RCLCPP_ERROR(this->get_logger(), "Unable to get allocated memory");
   }
+  free(block_for_process);
   std::string session_key = "SECRET";
   auto msg = std::make_unique<std_msgs::msg::String>();  
   RCLCPP_INFO(this->get_logger(), "size of empty string: '%ld'", strlen(msg->data.c_str()));
