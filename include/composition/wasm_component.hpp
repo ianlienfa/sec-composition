@@ -17,7 +17,8 @@
 
 #include "visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/int32.hpp"
+#include "composition/wasm_mod.hpp"
 
 namespace composition
 {
@@ -26,7 +27,7 @@ class WasmNode : public rclcpp::Node
 {
 public:
   COMPOSITION_PUBLIC
-  explicit WasmNode(const rclcpp::NodeOptions & options, const char* node_name);
+  explicit WasmNode(const rclcpp::NodeOptions & options);
   ~WasmNode(){
     mod->~Wasm_Mod();
   }
@@ -41,7 +42,7 @@ protected:
 private:    
     Wasm_Mod *mod;
     rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr sub_;
-    void get_wasm_callbacks(const char * ptr, void* callback);  
+    void get_wasm_callbacks();  
 };
 
 }  // namespace composition

@@ -12,8 +12,11 @@ find_package(rclcpp_components REQUIRED)
 find_package(rcutils REQUIRED)
 find_package(std_msgs REQUIRED)
 
-
 include_directories(include)
+
+# wasmer dependencies
+include_directories("/home/ian/wasmer/package/include") # self-compiled version
+link_directories("/home/ian/wasmer/package/lib") # self-compiled version
 
 # create ament index resource which references the libraries in the binary dir
 set(node_plugins "")
@@ -71,7 +74,6 @@ rclcpp_components_register_node(
 set(node_plugins "${node_plugins}composition::Listener;$<TARGET_FILE:listener_component>\n")
 ament_export_targets(export_listener_rclcpp_components)
 
-
 # attacker_component
 add_library(attacker_component SHARED src/attacker_component.cpp)
 target_compile_definitions(attacker_component
@@ -92,10 +94,38 @@ rclcpp_components_register_node(
 set(node_plugins "${node_plugins}composition::Attacker;$<TARGET_FILE:attacker_component>\n")
 ament_export_targets(export_attacker_rclcpp_components)
 
+# wasm_component
+add_library(wasm_component SHARED src/wasm_component.cpp)
+target_compile_definitions(wasm_component
+  PRIVATE "COMPOSITION_BUILDING_DLL")
+target_include_directories(wasm_component PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+ament_target_dependencies(wasm_component 
+  "rclcpp"
+  "rclcpp_components"
+  "std_msgs")
+rclcpp_components_register_node(
+  wasm_component
+    PLUGIN "composition::WasmNode"
+    EXECUTABLE wasmnode
+)
+set(node_plugins "${node_plugins}composition::WasmNode;$<TARGET_FILE:wasm_component>\n")
+ament_export_targets(export_wasm_component_rclcpp_components)
+target_link_libraries(wasm_component "wasmer")
+
+# wasm binary dependency for wasm_component 
+add_custom_command(TARGET wasm_component PRE_BUILD
+  COMMAND ${CMAKE_COMMAND} -E echo "Building wasm_mod_attacker.wasm"  
+  COMMAND em++ -std=c++20 -O2 -sSTANDALONE_WASM -Wl,--allow-undefined -Wl,--no-entry -o ${CMAKE_CURRENT_SOURCE_DIR}/build/mycomposition/wasm_mod_attacker.wasm ${CMAKE_CURRENT_SOURCE_DIR}/src/wasm_mod_attacker.cpp
+  COMMAND wasm2wat ${CMAKE_CURRENT_SOURCE_DIR}/build/mycomposition/wasm_mod_attacker.wasm -o ${CMAKE_CURRENT_SOURCE_DIR}/build/mycomposition/wasm_mod_attacker.wat
+)
+
 # manual_compose
 add_executable(manual_compose "src/manual_compose.cpp")
 target_link_libraries(manual_compose 
-  talker_component listener_component
+  talker_component wasm_component
 )
 ament_target_dependencies(manual_compose
   "rclcpp")
@@ -129,14 +159,12 @@ install(TARGETS attacker_component
         RUNTIME DESTINATION bin
 )
 
-
-# install(TARGETS
-#   talker_component
-#   listener_component
-#   attacker_component
-#   ARCHIVE DESTINATION lib
-#   LIBRARY DESTINATION lib
-#   RUNTIME DESTINATION bin)
+install(TARGETS wasm_component
+        EXPORT export_wasm_component_rclcpp_components
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+)
 
 install(TARGETS
   manual_compose

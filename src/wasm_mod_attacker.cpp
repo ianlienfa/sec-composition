@@ -17,7 +17,7 @@ int double_free(int i){
     int c = i;    
     free(cur);
     free(cur); // double free
-    (*cur++); // accessing that pointer
+    (void)(*cur++); // accessing that pointer    
     return (c+1);
 }
 

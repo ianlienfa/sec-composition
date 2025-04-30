@@ -17,7 +17,7 @@
 
 #include "visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/int32.hpp"
 
 namespace composition
 {
