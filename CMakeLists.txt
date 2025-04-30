@@ -125,10 +125,11 @@ add_custom_command(TARGET wasm_component PRE_BUILD
 # manual_compose
 add_executable(manual_compose "src/manual_compose.cpp")
 target_link_libraries(manual_compose 
-  talker_component wasm_component attacker_component
+  talker_component wasm_component attacker_component listener_component
 )
 ament_target_dependencies(manual_compose
   "rclcpp")
+
 
 # dds_listener
 add_executable(dds_listener "src/dds_listener.cpp")

@@ -21,6 +21,8 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/int32.hpp"
+
 
 namespace composition
 {
@@ -34,9 +36,9 @@ Listener::Listener(const rclcpp::NodeOptions & options)
   // Create a callback function for when messages are received.
   // Variations of this function also exist using, for example, UniquePtr for zero-copy transport.
   auto callback =
-    [this](std_msgs::msg::String::ConstSharedPtr msg) -> void
+    [this](std_msgs::msg::Int32::ConstSharedPtr msg) -> void
     {
-      RCLCPP_INFO(this->get_logger(), "Lisenter heard: [%s]", msg->data.c_str());            
+      RCLCPP_INFO(this->get_logger(), "Lisenter heard: [%d]", msg->data);            
       std::flush(std::cout);
       retransmit_message(msg->data);
     };
@@ -45,17 +47,22 @@ Listener::Listener(const rclcpp::NodeOptions & options)
   // compatible ROS publishers.
   // Note that not all publishers on the same topic with the same type will be compatible:
   // they must have compatible Quality of Service policies.
-  sub_ = create_subscription<std_msgs::msg::String>("chatter", 10, callback);
+  sub_ = create_subscription<std_msgs::msg::Int32>("chatter", 10, callback);
   pub_ = this->create_publisher<std_msgs::msg::String>("/shout", 10);
 }
 
-void Listener::retransmit_message(std::string s)
+void Listener::retransmit_message(int s)
 {
+  constexpr size_t block_size = (1 << 28); // 200 MB
+  void *block_for_process = malloc(sizeof(char) * block_size);
+  if(!block_for_process){
+    RCLCPP_ERROR(this->get_logger(), "Unable to get allocated memory");
+  }
   std::string session_key = "SECRET";
   auto msg = std::make_unique<std_msgs::msg::String>();  
   RCLCPP_INFO(this->get_logger(), "size of empty string: '%ld'", strlen(msg->data.c_str()));
   RCLCPP_INFO(this->get_logger(), "address of empty str: '%p'", msg->data.c_str());
-  msg->data = session_key + " | " + s;
+  msg->data = session_key + " | " + std::to_string(s);
   RCLCPP_INFO(this->get_logger(), "Sending to remote: '%s'", msg->data.c_str());
   RCLCPP_INFO(this->get_logger(), "size of filled: '%ld'", strlen(msg->data.c_str()));
   RCLCPP_INFO(this->get_logger(), "address of filled str: '%p'", msg->data.c_str());

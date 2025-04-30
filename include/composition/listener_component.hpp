@@ -18,6 +18,7 @@
 #include "visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/int32.hpp"
 
 namespace composition
 {
@@ -29,10 +30,10 @@ public:
   explicit Listener(const rclcpp::NodeOptions & options);
 
 protected:
-  void retransmit_message(std::string);
+  void retransmit_message(int);
 
 private:
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_;
+  rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr sub_;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_;
   size_t count_;
   rclcpp::TimerBase::SharedPtr timer_;

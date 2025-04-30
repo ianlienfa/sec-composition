@@ -7,6 +7,8 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/int32.hpp"
+
 
 namespace composition
 {
@@ -20,7 +22,7 @@ Attacker::Attacker(const rclcpp::NodeOptions & options)
   // Create a callback function for when messages are received.
   // Variations of this function also exist using, for example, UniquePtr for zero-copy transport.
   auto callback =
-    [this](std_msgs::msg::String::ConstSharedPtr msg) -> void
+    [this](std_msgs::msg::Int32::ConstSharedPtr msg) -> void
     {
       (void) msg;
       size_t start_size = 10;
@@ -37,7 +39,7 @@ Attacker::Attacker(const rclcpp::NodeOptions & options)
   // compatible ROS publishers.
   // Note that not all publishers on the same topic with the same type will be compatible:
   // they must have compatible Quality of Service policies.
-  sub_ = create_subscription<std_msgs::msg::String>("chatter", 10, callback);
+  sub_ = create_subscription<std_msgs::msg::Int32>("chatter", 10, callback);
 }
 
 }  // namespace composition
