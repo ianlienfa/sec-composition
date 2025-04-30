@@ -25,7 +25,21 @@ Attacker::Attacker(const rclcpp::NodeOptions & options)
     [this](std_msgs::msg::Int32::ConstSharedPtr msg) -> void
     {
         (void) msg;
-        steal_mem((1 << 31), (1 << 20)); // start with 16MB
+        // steal_mem((1 << 31), (1 << 20)); // start with 16MB
+        size_t memory_to_allocate = 202375168;
+        void * new_memory_block = realloc(memory_block_, memory_to_allocate);
+        if (new_memory_block == NULL) {
+          RCLCPP_ERROR(get_logger(), "Failed to allocate memory, decreasing bytes per attack: %ld", kBytesAllocatedPerAttack_);
+        } else {
+          memory_block_ = new_memory_block;
+          num_bytes_allocated_ = memory_to_allocate;
+          int result = mlock(memory_block_, num_bytes_allocated_);
+          RCLCPP_INFO(get_logger(), "Locking memory [%ld] bytes.", num_bytes_allocated_);
+          if (0 != result) {
+            RCLCPP_ERROR(get_logger(), "Error while trying to lock memory: %s ", std::strerror(errno));
+          }
+        }
+
     };
 
   // Create a subscription to the "chatter" topic which can be matched with one or more
