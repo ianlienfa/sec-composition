@@ -118,14 +118,15 @@ target_link_libraries(wasm_component "wasmer")
 # wasm binary dependency for wasm_component 
 add_custom_command(TARGET wasm_component PRE_BUILD
   COMMAND ${CMAKE_COMMAND} -E echo "Building wasm_mod_attacker.wasm"  
-  COMMAND em++ -std=c++20 -O2 -sSTANDALONE_WASM -Wl,--allow-undefined -Wl,--no-entry -o ${CMAKE_CURRENT_SOURCE_DIR}/build/mycomposition/wasm_mod_attacker.wasm ${CMAKE_CURRENT_SOURCE_DIR}/src/wasm_mod_attacker.cpp
-  COMMAND wasm2wat ${CMAKE_CURRENT_SOURCE_DIR}/build/mycomposition/wasm_mod_attacker.wasm -o ${CMAKE_CURRENT_SOURCE_DIR}/build/mycomposition/wasm_mod_attacker.wat
+  COMMAND em++ -std=c++20 -O2 -sSTANDALONE_WASM -Wl,--allow-undefined -Wl,--no-entry -o ${CMAKE_CURRENT_SOURCE_DIR}/wasm_build/wasm_mod_attacker.wasm ${CMAKE_CURRENT_SOURCE_DIR}/src/wasm_mod_attacker.cpp
+  COMMAND wasm2wat ${CMAKE_CURRENT_SOURCE_DIR}/wasm_build/wasm_mod_attacker.wasm -o ${CMAKE_CURRENT_SOURCE_DIR}/wasm_build/wasm_mod_attacker.wat
 )
 
 # manual_compose
 add_executable(manual_compose "src/manual_compose.cpp")
 target_link_libraries(manual_compose 
   talker_component wasm_component
+  -Wl,-rpath,/home/ian/wasmer/package/lib
 )
 ament_target_dependencies(manual_compose
   "rclcpp")

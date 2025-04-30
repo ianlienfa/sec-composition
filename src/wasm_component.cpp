@@ -43,7 +43,7 @@ void print_wasmer_error()
 WasmNode::WasmNode(const rclcpp::NodeOptions & options)
 : Node("WasmNode", options) // future option, take filename and nodename
 {
-    std::string filepath = "/home/ian/ros2_ws/src/mycomposition/build/mycomposition/wasm_mod_attacker.wat"; // fixed filepath for now
+    std::string filepath = "/home/ian/ros2_ws/src/mycomposition/wasm_build/wasm_mod_attacker.wasm"; // fixed filepath for now
     RCLCPP_INFO(this->get_logger(), "Initializing...\n");
     wasm_engine_t* engine = wasm_engine_new();
     mod = new Wasm_Mod("WasmNode", engine, false /*std_inherit*/);
