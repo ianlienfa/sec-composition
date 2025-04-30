@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "composition/wasm_component.hpp"
+#include "composition/attacker_component.hpp"
 #include "composition/talker_component.hpp"
 #include "rclcpp/rclcpp.hpp"
 
@@ -40,6 +41,9 @@ int main(int argc, char * argv[])
   exec.add_node(talker);
   auto attacker = std::make_shared<composition::WasmNode>(options);
   exec.add_node(attacker);
+  // auto attacker = std::make_shared<composition::Attacker>(options);
+  // exec.add_node(attacker);
+
   // auto listener = std::make_shared<composition::Listener>(options);
   // exec.add_node(listener);
 
