@@ -1,5 +1,5 @@
 # Exploitation
-- Checkout exploitations in these three branches: memory_corruption, memory_consumption, secrecy
+- Checkout exploitations in these branches: memory_corruption, memory_consumption, secrecy, secrecy_remote
 
 # Build
 Enter the src/mycompostion directory
