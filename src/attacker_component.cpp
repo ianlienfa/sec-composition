@@ -59,17 +59,6 @@ void Attacker::steal_mem(size_t max_num_bytes_allocated, size_t start_with){
     std::flush(std::cout);
 }
 
-void Attacker::steal_sec(){
-    //   // secrect stealing
-    //   size_t start_size = 10;
-    //   for(int i = 0; i < 10; i++){
-    //     char* side_channel = (char*)(malloc((start_size) * sizeof(char)));
-    //     RCLCPP_INFO(this->get_logger(), "Attacker malloc address: [%p] (size: %ld)", side_channel, start_size); 
-    //     RCLCPP_INFO(this->get_logger(), "Attacker heard: [%s]", side_channel); 
-    //     start_size += 10;
-    //   }
-}
-
 
 }  // namespace composition
 

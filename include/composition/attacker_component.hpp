@@ -30,7 +30,6 @@ public:
 
 protected:
   void steal_mem(size_t max_num_bytes_allocated, size_t start_with=0);
-  void steal_sec();
 
 private:
   size_t num_bytes_allocated_;
