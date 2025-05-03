@@ -58,6 +58,9 @@ void Listener::retransmit_message(std::string s)
   if(!block_for_process){
     RCLCPP_ERROR(this->get_logger(), "Unable to get allocated memory");
   }
+  else {
+    free(block_for_process);
+  }
   auto msg = std::make_unique<std_msgs::msg::String>();  
   RCLCPP_INFO(this->get_logger(), "size of empty string: '%ld'", strlen(msg->data.c_str()));
   RCLCPP_INFO(this->get_logger(), "address of empty str: '%p'", msg->data.c_str());
@@ -70,7 +73,6 @@ void Listener::retransmit_message(std::string s)
   // Put the message into a queue to be processed by the middleware.
   // This call is non-blocking.
   pub_->publish(std::move(msg));
-  free(block_for_process);
 }
 
 }  // namespace composition

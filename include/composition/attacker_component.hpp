@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef COMPOSITION__LISTENER_COMPONENT_HPP_
-#define COMPOSITION__LISTENER_COMPONENT_HPP_
+#ifndef COMPOSITION__ATTACKER_COMPONENT_HPP_
+#define COMPOSITION__ATTACKER_COMPONENT_HPP_
 
 #include "visibility_control.h"
 #include "rclcpp/rclcpp.hpp"
@@ -41,4 +41,4 @@ private:
 
 }  // namespace composition
 
-#endif  // COMPOSITION__LISTENER_COMPONENT_HPP_
+#endif  // COMPOSITION__ATTACKER_COMPONENT_HPP_

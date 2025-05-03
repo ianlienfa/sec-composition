@@ -95,7 +95,7 @@ ament_export_targets(export_attacker_rclcpp_components)
 # manual_compose
 add_executable(manual_compose "src/manual_compose.cpp")
 target_link_libraries(manual_compose 
-  talker_component listener_component
+  talker_component listener_component attacker_component
 )
 ament_target_dependencies(manual_compose
   "rclcpp")

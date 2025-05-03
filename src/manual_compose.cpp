@@ -16,6 +16,7 @@
 
 #include "composition/listener_component.hpp"
 #include "composition/talker_component.hpp"
+#include "composition/attacker_component.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char * argv[])
@@ -40,6 +41,8 @@ int main(int argc, char * argv[])
   exec.add_node(talker);
   auto listener = std::make_shared<composition::Listener>(options);
   exec.add_node(listener);
+  // auto attacker = std::make_shared<composition::Attacker>(options);
+  // exec.add_node(attacker);
 
   // spin will block until work comes in, execute work as it becomes available, and keep blocking.
   // It will only be interrupted by Ctrl-C.
