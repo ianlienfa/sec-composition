@@ -60,7 +60,7 @@ WasmNode::WasmNode(const rclcpp::NodeOptions & options)
 : Node("WasmNode", options) // future option, take filename and nodename
 {
     // ROS specific init (to be automated)
-    timer_ = create_wall_timer(1s, [this]() {return this->on_timer();});
+    timer_ = create_wall_timer(50ms, [this]() {return this->on_timer();});
     pub_ = create_publisher<std_msgs::msg::Int32>("rand", 10);
 
     // wasm specific init

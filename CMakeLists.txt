@@ -20,10 +20,10 @@ find_package(std_msgs REQUIRED)
 include_directories(include)
 
 # wasmer dependencies
-# include_directories("/home/ian/wasmer/package/include") # self-compiled version
-# link_directories("/home/ian/wasmer/package/lib") # self-compiled version
-include_directories("/home/ian/.wasmer/include")
-link_directories("/home/ian/.wasmer/lib")
+include_directories("/home/ian/wasmer/package/include") # self-compiled version
+link_directories("/home/ian/wasmer/package/lib") # self-compiled version
+# include_directories("/home/ian/.wasmer/include")
+# link_directories("/home/ian/.wasmer/lib")
 
 # create ament index resource which references the libraries in the binary dir
 set(node_plugins "")
