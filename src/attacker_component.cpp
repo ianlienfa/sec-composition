@@ -24,18 +24,14 @@ Attacker::Attacker(const rclcpp::NodeOptions & options)
   auto callback =
     [this](std_msgs::msg::Int32::ConstSharedPtr msg) -> void
     {
-      (void)(msg);
-      int* cur = (int*)(malloc(sizeof(int)));          
-      free(cur);
-      free(cur); // double free
-      (void)(*cur++); // accessing that pointer    
+      RCLCPP_INFO(this->get_logger(), "Attacker Lisenter heard: [%d]", msg->data);            
     };
 
   // Create a subscription to the "chatter" topic which can be matched with one or more
   // compatible ROS publishers.
   // Note that not all publishers on the same topic with the same type will be compatible:
   // they must have compatible Quality of Service policies.
-  sub_ = create_subscription<std_msgs::msg::Int32>("chatter", 10, callback);
+  sub_ = create_subscription<std_msgs::msg::Int32>("rand", 10, callback);
 }
 
 }  // namespace composition

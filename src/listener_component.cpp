@@ -22,6 +22,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
+
 namespace composition
 {
 
@@ -33,20 +34,20 @@ Listener::Listener(const rclcpp::NodeOptions & options)
 {
   // Create a callback function for when messages are received.
   // Variations of this function also exist using, for example, UniquePtr for zero-copy transport.
-  auto callback =
-    [this](std_msgs::msg::String::ConstSharedPtr msg) -> void
-    {
-      RCLCPP_INFO(this->get_logger(), "Lisenter heard: [%s]", msg->data.c_str());            
-      std::flush(std::cout);
-      retransmit_message(msg->data);
-    };
+  // auto callback =
+  //   [this](std_msgs::msg::String::ConstSharedPtr msg) -> void
+  //   {
+  //     RCLCPP_INFO(this->get_logger(), "Lisenter heard: [%s]", msg->data.c_str());            
+  //     std::flush(std::cout);
+  //     // retransmit_message(msg->data);
+  //   };
 
   // Create a subscription to the "chatter" topic which can be matched with one or more
   // compatible ROS publishers.
   // Note that not all publishers on the same topic with the same type will be compatible:
   // they must have compatible Quality of Service policies.
-  sub_ = create_subscription<std_msgs::msg::String>("chatter", 10, callback);
-  pub_ = this->create_publisher<std_msgs::msg::String>("/shout", 10);
+  // sub_ = create_subscription<std_msgs::msg::Int32>("rand", 10, callback);
+  // pub_ = this->create_publisher<std_msgs::msg::String>("/shout", 10);
 }
 
 void Listener::retransmit_message(std::string s)

@@ -40,14 +40,46 @@ void print_wasmer_error()
     }
 }  
 
+// the write_and_publish interface for ROS
+// everytime this is called, allocate a unique pointer and write the given value into it
+wasm_trap_t* WasmNode::wasm_write_and_publish(void* env_arg, const wasm_val_vec_t* args, wasm_val_vec_t* results) {
+  auto* self = static_cast<WasmNode*>(env_arg);
+  auto msg = std::make_unique<std_msgs::msg::Int32>();
+  msg->data = static_cast<int>(args->data[0].of.i32);
+  if((!self) || (!self->pub_)){
+    results->data[0].of.i64 = 1;
+  }
+  else{
+    self->pub_->publish(std::move(msg));
+    results->data[0].of.i64 = 0;
+  }
+  return NULL;
+}
+
 WasmNode::WasmNode(const rclcpp::NodeOptions & options)
 : Node("WasmNode", options) // future option, take filename and nodename
 {
+    // ROS specific init (to be automated)
+    timer_ = create_wall_timer(1s, [this]() {return this->on_timer();});
+    pub_ = create_publisher<std_msgs::msg::Int32>("rand", 10);
+
+    // wasm specific init
     std::string filepath = "/home/ian/ros2_ws/src/mycomposition/wasm_build/wasm_mod_attacker.wasm"; // fixed filepath for now
     RCLCPP_INFO(this->get_logger(), "Initializing...\n");
     wasm_engine_t* engine = wasm_engine_new();
     mod = new Wasm_Mod("WasmNode", engine, false /*std_inherit*/);
     mod->wasmmod_load_module_from_file(filepath);    
+
+    // process import before initializing instance
+    own wasm_functype_t* write_and_publish_type = wasm_functype_new_1_1(wasm_valtype_new_i32(), wasm_valtype_new_i32());
+    own wasm_func_t* write_and_publish_func = wasm_func_new_with_env(mod->store, write_and_publish_type, wasm_write_and_publish, this, NULL);
+    wasm_functype_delete(write_and_publish_type);
+    wasm_extern_t* externs[] = {
+      wasm_func_as_extern(write_and_publish_func)
+    };
+    mod->imports = WASM_ARRAY_VEC(externs);
+
+    // build instance after import
     mod->nowasi_wasmmod_build_instance(); 
 
     // export wasm_publish function
@@ -84,6 +116,32 @@ void WasmNode::get_wasm_callbacks(){
       }
     };
     sub_ = create_subscription<std_msgs::msg::Int32>("chatter", 10, callback);    
+
+    wasm_func_t* mod_on_timer_callback = mod->wasmmod_get_export_func(2);
+    const wasm_name_t* mod_export_name_2 = mod->wasmmod_get_export_name(2);    
+    printf("function name: %s\n", mod_export_name_2->data);
+    if(!mod_subscriber_callback){
+      printf("> failed retreiving `on_timer_callback` function!\n");      
+    }
+
+    auto wasm_on_timer_callback =
+    [this, mod_on_timer_callback]() -> void
+    {      
+      wasm_val_vec_t args = WASM_EMPTY_VEC;
+      wasm_val_t results_val[1] = { WASM_INIT_VAL };
+      wasm_val_vec_t results = WASM_ARRAY_VEC(results_val);
+      if (wasm_func_call(mod_on_timer_callback, &args, &results)) {
+        // print_wasmer_error();
+        // printf("> Error calling the `wasm_on_timer_callback` function!\n");            
+      }
+    };
+
+    this->on_timer_callback = wasm_on_timer_callback;
+}
+
+void WasmNode::on_timer()
+{
+  this->on_timer_callback();
 }
 
 

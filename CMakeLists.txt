@@ -5,6 +5,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -15,8 +20,10 @@ find_package(std_msgs REQUIRED)
 include_directories(include)
 
 # wasmer dependencies
-include_directories("/home/ian/wasmer/package/include") # self-compiled version
-link_directories("/home/ian/wasmer/package/lib") # self-compiled version
+# include_directories("/home/ian/wasmer/package/include") # self-compiled version
+# link_directories("/home/ian/wasmer/package/lib") # self-compiled version
+include_directories("/home/ian/.wasmer/include")
+link_directories("/home/ian/.wasmer/lib")
 
 # create ament index resource which references the libraries in the binary dir
 set(node_plugins "")

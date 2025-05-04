@@ -19,6 +19,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
+
 namespace composition
 {
 
@@ -32,7 +33,7 @@ protected:
   void retransmit_message(std::string);
 
 private:
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_;
+  // rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr sub_;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_;
   size_t count_;
   rclcpp::TimerBase::SharedPtr timer_;

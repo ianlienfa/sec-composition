@@ -30,19 +30,22 @@ public:
   explicit WasmNode(const rclcpp::NodeOptions & options);
   ~WasmNode(){
     mod->~Wasm_Mod();
-  }
+  }  
+  static wasm_trap_t* wasm_write_and_publish(void* env_arg, const wasm_val_vec_t* args, wasm_val_vec_t* results);
 
 protected:
   void on_timer();
   void wasm_create_publisher(const char * ptr);
-  void wasm_publish(const char * ptr);
   void wasm_on_timer(void *callback);
-  void wasm_subscribe(const char * ptr, void* callback);  
+  void wasm_subscribe(const char * ptr, void* callback);
 
 private:    
     Wasm_Mod *mod;
     rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr sub_;
+    rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr pub_;
     void get_wasm_callbacks();  
+    rclcpp::TimerBase::SharedPtr timer_;
+    std::function<void()> on_timer_callback;
 };
 
 }  // namespace composition
